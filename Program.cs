@@ -11,7 +11,6 @@ using System.Web.WebPages;
 using FluentValidation;
 using FluentValidation.Results;
 using OneHandTraining.Validation;
-// using OneHandTraining.Validation;
 using ValidationResult = System.ComponentModel.DataAnnotations.ValidationResult;
 
 var builder = WebApplication.CreateBuilder(args);

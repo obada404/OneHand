@@ -14,7 +14,7 @@ using OneHandTraining.Validation;
 using ValidationResult = System.ComponentModel.DataAnnotations.ValidationResult;
 
 var builder = WebApplication.CreateBuilder(args);
-
+//
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();

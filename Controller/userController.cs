@@ -1,7 +1,8 @@
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using OneHandTraining.Validation;
-
+using OneHandTraining.model;
+using OneHandTraining.DTO;
 namespace OneHandTraining.controller;
 [ApiController]
 public class userController :Controller
@@ -20,8 +21,7 @@ public class userController :Controller
          var errors = result.Errors.Select(x => new { errors = x.ErrorMessage });
          return new JsonResult(errors);
      }
-        var resp = new UserOld(req.User.Username, req.User.Email, req.User.Password,"","asdsdasd",$"{Guid.NewGuid()}");
-        Repo.UserDb.Add(resp);
+        var resp =  Service.setUser(req.User);
         //Json version 
         return new JsonResult(new UserRequestEnv<UserOld>(resp)){StatusCode = (int) HttpStatusCode.OK};
     
@@ -31,109 +31,71 @@ public class userController :Controller
     
     [HttpPost]
     [Route("/login")] 
-    public ActionResult PostLogin([FromBody] UserRequestEnv<UserRequest> req)
+    public ActionResult PostLogin([FromBody] UserRequestEnv<loginUserRequest> req)
     {
-        
-        IEnumerable<UserOld> userQuery =
-         from user1 in Repo.UserDb
-         where user1.Email.Equals(req.User.Email) && user1.Password.Equals(req.User.Password)
-         select user1;
-        
+
+
+       var userQuery = Service.findUserByEmail(req.User);
         
         return new ObjectResult(userQuery.Last()){StatusCode = (int)HttpStatusCode.OK};
     }
     [HttpPost]
     [Route("/users/login")] 
-    public ActionResult PostUsersLogin([FromBody] UserRequestEnv<UserRequest> req)
+    public ActionResult PostUsersLogin([FromBody] UserRequestEnv<loginUserRequest> req)
     {
         
-        IEnumerable<UserOld> userQuery =
-            from user1 in Repo.UserDb
-            where user1.Email.Equals(req.User.Email) && user1.Password.Equals(req.User.Password)
-            select user1;
+        var userQuery = Service.findUserByEmail(req.User);
+
         
         
         return new ObjectResult(userQuery.Last()){StatusCode = (int)HttpStatusCode.OK};
     }
     [HttpGet]
     [Route("/user")] 
-    public ActionResult GetUser(  )
+    public ActionResult GetUser()
     {
-        
 
-        IEnumerable<UserOld> userQuery =
-            from user1 in Repo.UserDb
-            where user1.Token.Equals(Request.Headers.Authorization) 
-            select user1;
-        
+
+       var userQuery= Service.findUserByToken(Request.Headers.Authorization);
         
         return new ObjectResult(userQuery.Last()){StatusCode = (int)HttpStatusCode.OK};
     }
 
     [HttpPut]
     [Route("/user")]
-    public ActionResult PutUser( [FromBody] UserRequestEnv<UserRequest> req)
+    public ActionResult PutUser( [FromBody] UserRequestEnv<emailUserRequest> req)
     {
-        foreach( UserOld cust in Repo.UserDb)
-     {
-         if (cust.Token == Request.Headers.Authorization ) 
-         {
-             cust.Email= req.User.Email;
-             return new ObjectResult(cust){StatusCode = (int)HttpStatusCode.OK};
-         }
-     }
-        return new ObjectResult("no user "){StatusCode = (int)HttpStatusCode.NotFound};
-        
-    }
+        return Service.updateEmail(Request.Headers.Authorization, req.User);
+    }   
 
     [HttpPost]
     [Route("/profiles")]
     public ActionResult postProfiles([FromBody] ProfileRequestEnv<Profile> req)
-    { 
-        Profile profile = new Profile(req.profile.username, req.profile.bio, req.profile.image,req.profile.following);
-     ProfileRequestEnv<Profile> root = new ProfileRequestEnv<Profile>(profile);
-     Repo.profileDb.Add(root);
+    {
+      var root = Service.setProfile(req.profile);
      return new ObjectResult(root){StatusCode = (int)HttpStatusCode.Accepted};
         
     }
     [HttpGet]
     [Route("/profiles/{username}")]
-    public ActionResult Getprofiles(String username){
+    public ActionResult Getprofiles(String username)
+    {
 
-            IEnumerable<ProfileRequestEnv<Profile>> profileQuery =
-                from Profile in Repo.profileDb
-                where Profile.profile.username.Equals(username)
-                select Profile;
-            
+    var profileQuery=Service.findProfileByAuthor(username);
             return new ObjectResult(profileQuery.Last()){StatusCode = (int)HttpStatusCode.OK};
         }
     [HttpPost]
     [Route("/profiles/{username}/follow")]
-    public ActionResult postFollowProfiles(String username){
-
-        foreach( ProfileRequestEnv<Profile> cust in Repo.profileDb)
-        {
-            if (cust.profile.username.Equals(username) == true )
-            {
-                cust.profile.following = true;
-                return new ObjectResult(cust){StatusCode = (int)HttpStatusCode.OK};
-            }
-        }
-        return new ObjectResult("user profile "){StatusCode = (int)HttpStatusCode.NoContent};
+    public ActionResult postFollowProfiles(String username)
+    {
+        return Service.FindfollowingProfiles(username);
     }
     [HttpDelete]
     [Route("/profiles/{username}/follow")]
-    public ActionResult Deleteprofiles(String username){
+    public ActionResult Deleteprofiles(String username)
+    {
 
-     foreach( ProfileRequestEnv<Profile> cust in Repo.profileDb)
-     {
-         if (cust.profile.username.Equals(username) == true )
-         {
-             cust.profile.following = false;
-             return new ObjectResult(cust){StatusCode = (int)HttpStatusCode.OK};
-         }
-     }
-     return new ObjectResult("user profile "){StatusCode = (int)HttpStatusCode.NoContent};
+      return  Service.Deleteprofiles(username);
     }
     
     [HttpGet]
@@ -155,12 +117,8 @@ public class userController :Controller
          
          
      }
-     Article curent = new Article(req.article.slug, req.article.title, req.article.description, req.article.body,
-         req.article.tagList, req.article.createdAt, req.article.updatedAt, req.article.favorited,
-         req.article.favoritesCount, req.article.author);
-     
-     Repo.allArticle.addToArticle( curent);
-     ArticleRequestEnv<Article> root = new ArticleRequestEnv<Article>(curent);
+
+     var root = Service.setArticle(req.article);
      return new ObjectResult(root ){StatusCode = (int)HttpStatusCode.OK};
    
     }
@@ -170,29 +128,20 @@ public class userController :Controller
     public ActionResult getaArticles(){
         if(! (string.IsNullOrEmpty(Request.Query["favorited"])))
         {
-            IEnumerable<Article> que  =
-                from Article in Repo.allArticle.articles.ToArray()
-                where Article.author.username.Equals(Request.Query["favorited"])
-                select Article;
+            var que = Service.getaArticlesByFavorited((Request.Query["favorited"]));
             return new ObjectResult( que ){StatusCode = (int)HttpStatusCode.OK};
         }
         
         
         if(! (string.IsNullOrEmpty(Request.Query["author"])))
         {
-            IEnumerable<Article> que  =
-                from Article in Repo.allArticle.articles.ToArray()
-                where Article.author.username.Equals(Request.Query["author"])
-                select Article;
+            var que = Service.getaArticlesByAuthor((Request.Query["author"]));
             return new ObjectResult( que ){StatusCode = (int)HttpStatusCode.OK};
         }
         
         if(! (string.IsNullOrEmpty(Request.Query["tag"])))
         {
-            IEnumerable<Article> que  =
-                from Article in Repo.allArticle.articles.ToArray()
-                where Article.tagList.Contains(Request.Query["tag"])
-                select Article;
+            var que = Service.getaArticlesByTag((Request.Query["tag"]));
             return new ObjectResult( que ){StatusCode = (int)HttpStatusCode.OK};
         }
         
@@ -201,19 +150,12 @@ public class userController :Controller
     
     [HttpGet]
     [Route("/articles/feed")]
-    public ActionResult getArticlesFeed(){
+    public ActionResult getArticlesFeed()
+    {
 
-       
-        IEnumerable<UserOld> userQuery =
-            from user1 in Repo.UserDb
-            where user1.Token.Equals(Request.Headers.Authorization) 
-            select user1;
-        
-        IEnumerable<Article> que  =
-            (from Article in Repo.allArticle.articles.ToArray()
-            where Article.author.following.Equals(true)
-            select Article).Take(5);
-        
+
+
+        var que = Service.getArticlesFeed(Request.Headers.Authorization);
         return new ObjectResult(que){StatusCode = (int)HttpStatusCode.OK};
     }
 

@@ -1,5 +1,8 @@
 using FluentValidation;
 using OneHandTraining.controller;
+using OneHandTraining.model;
+using OneHandTraining.DTO;
+
 namespace OneHandTraining.Validation;
 
 public class ArticleValidator : AbstractValidator<ArticleRequest>

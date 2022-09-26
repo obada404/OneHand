@@ -39,7 +39,7 @@ public class RootArticle
     public record  ArticleRequestEnv<T> ( T article);
 
 
-    public record ArticleRequest (string slug, string title, string description, string body, List<string> tagList, DateTime createdAt, DateTime updatedAt, bool favorited, int favoritesCount, Author author);
+    public record ArticleRequest (string slug, string title, string description, string body, List<string> tagList, DateTime createdAt, DateTime updatedAt, bool favorited, int favoritesCount, UserOld author);
 
 public record ProfileRequestEnv<T> ( T profile);
 
@@ -53,7 +53,7 @@ public class Users
         this.user = user;
     }
 
-    
+ 
 }
 // record Users(string? UserName, string? Email, string? Password, string? Token,
 //     string? Bio, string? Image);

@@ -54,9 +54,14 @@ public class inMemoryUserRepository :IUsersRepository
         
         return userQuery.Last();
     }
-/*List<UserOld>*/ 
-    public void GetUsersGeneric(Func<UserOld, bool> pred)
+
+    public List<UserOld> GetUsersGeneric(Func<UserOld, bool> pred)
     {
-        //genaric code 
+        throw new NotImplementedException();
     }
+    /*List<UserOld>*/ 
+    // public void GetUsersGeneric(Func<UserOld, bool> pred)
+    // {
+    //     //genaric code 
+    // }
 }

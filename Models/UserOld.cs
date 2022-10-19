@@ -15,7 +15,7 @@ public class UserOld
 
     public int Id { get; set; }
 
-    public  string Username { get;  }
+    public  string Username { get; set; }
     public  string Email { get; set; }
 
     public  string Password { get; }

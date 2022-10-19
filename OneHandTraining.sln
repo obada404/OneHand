@@ -5,6 +5,8 @@ VisualStudioVersion = 17.3.32811.315
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "OneHandTraining", "OneHandTraining.csproj", "{0B65D161-58B5-48D7-AE54-FB2456423402}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "oneHandIntegrationTest", "oneHandIntegrationTest\oneHandIntegrationTest.csproj", "{16471D62-6910-400E-A58E-9B4E98C9456A}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -15,6 +17,10 @@ Global
 		{0B65D161-58B5-48D7-AE54-FB2456423402}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{0B65D161-58B5-48D7-AE54-FB2456423402}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{0B65D161-58B5-48D7-AE54-FB2456423402}.Release|Any CPU.Build.0 = Release|Any CPU
+		{16471D62-6910-400E-A58E-9B4E98C9456A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{16471D62-6910-400E-A58E-9B4E98C9456A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{16471D62-6910-400E-A58E-9B4E98C9456A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{16471D62-6910-400E-A58E-9B4E98C9456A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

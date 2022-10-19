@@ -17,8 +17,8 @@ public class SqliteUserRepository :IUsersRepository
     {
 
         _context.UserOldDBs.Add(entity);
-        _context.SaveChanges(); //unit of work (design pattern)
-        return entity.Id; //yes magic
+        _context.SaveChanges(); 
+        return entity.Id; 
     }
 
 

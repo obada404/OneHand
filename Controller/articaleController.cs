@@ -9,13 +9,11 @@ namespace OneHandTraining.controller;
 
 public class articaleController :Controller
 {
-    private userController _userController;
     private readonly IarticaleService _articaleService;
 
-    public articaleController(IarticaleService articaleService,userController userController1)
+    public articaleController(IarticaleService articaleService)
     {
         _articaleService = articaleService;
-        _userController = userController1;
     }
 
     [HttpPost]
@@ -39,22 +37,22 @@ public class articaleController :Controller
     [HttpGet]
     [Route("/articles")]
     public ActionResult getaArticles(){
-        if(! (string.IsNullOrEmpty(_userController.Request.Query["favorited"])))
+        if(! (string.IsNullOrEmpty(Request.Query["favorited"])))
         {
-            var que = _articaleService.getaArticlesByFavorited((_userController.Request.Query["favorited"]));
+            var que = _articaleService.getArticlesByFavorited((Request.Query["favorited"]));
             return new ObjectResult( que ){StatusCode = (int)HttpStatusCode.OK};
         }
         
         
-        if(! (string.IsNullOrEmpty(_userController.Request.Query["author"])))
+        if(! (string.IsNullOrEmpty(Request.Query["author"])))
         {
-            var que = _articaleService.getaArticlesByAuthor((_userController.Request.Query["author"]));
+            var que = _articaleService.getaArticlesByAuthor((Request.Query["author"]));
             return new ObjectResult( que ){StatusCode = (int)HttpStatusCode.OK};
         }
         
-        if(! (string.IsNullOrEmpty(_userController.Request.Query["tag"])))
+        if(! (string.IsNullOrEmpty(Request.Query["tag"])))
         {
-            var que = _articaleService.getaArticlesByTag((_userController.Request.Query["tag"]));
+            var que = _articaleService.getaArticlesByTag((Request.Query["tag"]));
             return new ObjectResult( que ){StatusCode = (int)HttpStatusCode.OK};
         }
         
@@ -68,7 +66,7 @@ public class articaleController :Controller
 
 
 
-        var que = _articaleService.getArticlesFeed(_userController.Request.Headers.Authorization);
+        var que = _articaleService.getArticlesFeed(Request.Headers.Authorization);
         return new ObjectResult(que){StatusCode = (int)HttpStatusCode.OK};
     }
 }

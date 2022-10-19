@@ -9,6 +9,7 @@ using FluentValidation;
 using FluentValidation.Results;
 using Microsoft.EntityFrameworkCore;
 using OneHandTraining;
+using OneHandTraining.Decorator;
 using OneHandTraining.Interface;
 using OneHandTraining.Models;
 using OneHandTraining.Validation;
@@ -26,6 +27,9 @@ builder.Services.AddDbContext<oneHandContext>(options => options.UseSqlite(build
 //builder.Services.AddScoped<IValidator<UserRequest>, userValidator>();
 builder.Services.AddScoped<IUsersRepository, SqliteUserRepository>();
 builder.Services.AddScoped<IUserService, UserService>();
+builder.Services.AddScoped<IprofileService, profileService>();
+builder.Services.AddScoped<IarticaleService, articaleService>();
+builder.Services.AddScoped<IarticaleRepository, SqliteArticaleRepository>();
 builder.Services.AddFluentValidation(fv =>
 {
     fv.AutomaticValidationEnabled =false;

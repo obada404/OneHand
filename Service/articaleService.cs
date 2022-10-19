@@ -1,6 +1,7 @@
 using System.Net;
 using Microsoft.AspNetCore.Mvc;
 using OneHandTraining.DTO;
+using OneHandTraining.Interface;
 using OneHandTraining.model;
 
 namespace OneHandTraining;
@@ -8,7 +9,7 @@ namespace OneHandTraining;
 public interface IarticaleService
 {
     ArticleRequestEnv<Article>  setArticle(ArticleRequest article);
-    IEnumerable<Article> getaArticlesByFavorited( String favorited);
+    IEnumerable<Article> getArticlesByFavorited( String favorited);
     IEnumerable<Article> getaArticlesByAuthor( String author);
     IEnumerable<Article> getaArticlesByTag( String Tag);
     IEnumerable<Article> getArticlesFeed(String Authorization);
@@ -16,19 +17,29 @@ public interface IarticaleService
 
 public class articaleService : IarticaleService
 {
+
+    private readonly IarticaleRepository _articaleRepository;
+
+    public articaleService(IarticaleRepository articaleRepository)
+    {
+        _articaleRepository = articaleRepository;
+    }
+    
      public ArticleRequestEnv<Article>  setArticle(ArticleRequest article)
      {
        
          Article curent = new Article(article.slug, article.title, article.description, article.body,
              article.tagList, article.createdAt, article.updatedAt,article.favorited,
              article.favoritesCount,article.author);
-     
-         Repo.allArticle.addToArticle( curent);
-         ArticleRequestEnv<Article> root = new ArticleRequestEnv<Article>(curent);
+
+       var art =   _articaleRepository.add(curent);
+       ArticleRequestEnv<Article> root = new ArticleRequestEnv<Article>(curent);
+
          return root;
      }
-      public IEnumerable<Article> getaArticlesByFavorited( String favorited)
-     {
+      public IEnumerable<Article> getArticlesByFavorited( String favorited)
+      {
+          _articaleRepository.getByFavorited(favorited);
          IEnumerable<Article> que  =
              from Article in Repo.allArticle.articles.ToArray()
              where Article.author.Username.Equals(favorited)
@@ -38,6 +49,8 @@ public class articaleService : IarticaleService
      }
       public IEnumerable<Article> getaArticlesByAuthor( String author)
      {
+         _articaleRepository.getByAuthor(author);
+
          IEnumerable<Article> que  =
              from Article in Repo.allArticle.articles.ToArray()
              where Article.author.Username.Equals(author)
@@ -47,6 +60,8 @@ public class articaleService : IarticaleService
      }
       public IEnumerable<Article> getaArticlesByTag( String Tag)
      {
+         _articaleRepository.getByTag(Tag);
+
          IEnumerable<Article> que  =
              from Article in Repo.allArticle.articles.ToArray()
              where Article.author.Username.Equals(Tag)
@@ -56,6 +71,8 @@ public class articaleService : IarticaleService
      }
       public IEnumerable<Article> getArticlesFeed(String Authorization)
      {
+         _articaleRepository.getArticlesFeed(Authorization);
+
          IEnumerable<UserOld> userQuery =
              from user1 in Repo.UserDb
              where user1.Token.Equals(Authorization) 

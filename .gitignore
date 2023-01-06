@@ -9,6 +9,7 @@
 *.user
 *.userosscache
 *.sln.docstates
+apply-gitignore = !git ls-files -ci --exclude-standard -z | xargs -0r git rm --cached    
 
 # User-specific files (MonoDevelop/Xamarin Studio)
 *.userprefs

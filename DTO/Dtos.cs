@@ -6,6 +6,7 @@ public class Dtos
 
 
 }
+public record tagseRequestEnv<T> ( T tags);
 
 
 public class RootArticle
@@ -29,9 +30,9 @@ public class RootArticle
 
         public int articlesCount { get; set; } = 0;
 
-        public bool addToArticle(Article? a)
+        public bool addToArticle(Article? article)
         {
-            articles.Add(a);
+            if (article != null) articles.Add(article);
             articlesCount++;
             return true;
         }
@@ -55,9 +56,6 @@ public class Users
 
  
 }
-// record Users(string? UserName, string? Email, string? Password, string? Token,
-//     string? Bio, string? Image);
-
 public record UserRequest (string Username, string Email, string Password);
 public record loginUserRequest ( string Email, string Password);
 public record emailUserRequest ( string Email);

@@ -1,36 +1,23 @@
 using System.Net;
+using AdventureWorks.Filter;
 using Microsoft.AspNetCore.Mvc;
-using OneHandTraining.Validation;
 using OneHandTraining.model;
 using OneHandTraining.DTO;
-using OneHandTraining.Models;
+using OneHandTraining.Interface;
 
 namespace OneHandTraining.controller;
 [ApiController]
-public class profileController:Controller
+public class ProfileController:Controller
 {
     private readonly IprofileService _profileService;
-    readonly private oneHandContext _oneHandContext;
 
-    public profileController(IprofileService profileService,oneHandContext oneHandContext)
+    public ProfileController(IprofileService profileService)
     {
-        
-     
-            _profileService = profileService;
-            _oneHandContext = oneHandContext;
-        
-    }
-
-    [HttpPost]
-    [Route("/profiles")]
-    public ActionResult postProfiles([FromBody] ProfileRequestEnv<Profile> req)
-    {
-        var root = _profileService.setProfile(req.profile);
-        return new ObjectResult(root){StatusCode = (int)HttpStatusCode.Accepted};
-        
+        _profileService = profileService;
     }
 
     [HttpGet]
+    [TypeFilter(typeof(LogFilter))]
     [Route("/profiles/{username}")]
     public ActionResult Getprofiles(String username)
     {
@@ -39,25 +26,26 @@ public class profileController:Controller
         return new ObjectResult(profileQuery.Last()){StatusCode = (int)HttpStatusCode.OK};
     }
 
-    [HttpPost]
+    [HttpGet]
     [Route("/profiles/{username}/follow")]
-    public ActionResult postFollowProfiles(String username)
+    public ActionResult FollowProfile(String username,[FromBody] emailUserRequest emailUserRequest)
     {
-        return _profileService.FindfollowingProfiles(username);
+        var result = _profileService.FollowProfile(username, emailUserRequest.Email);
+        return new ObjectResult(result){StatusCode = (int)HttpStatusCode.OK};
     }
 
     [HttpDelete]
     [Route("/profiles/{username}/follow")]
-    public ActionResult Deleteprofiles(String username)
+    public ActionResult unFollowProfile(String username,[FromBody] emailUserRequest emailUserRequest)
     {
-
-        return  _profileService.Deleteprofiles(username);
+        var result = _profileService.unFollowProfile(username,emailUserRequest.Email);
+        return new ObjectResult(result){StatusCode = (int)HttpStatusCode.OK};
+ 
     }
 
     [HttpGet]
     [Route("/tags")]
     public ActionResult getTags(){
-
         return new ObjectResult( new tagseRequestEnv<Array>(Repo.tags) ){StatusCode = (int)HttpStatusCode.OK};
     }
 }

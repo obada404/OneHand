@@ -13,7 +13,7 @@ public class SqlAuditDecorator: IUsersRepository
         _inner = inner;
     }
     
-    public int Add(UserOld entity)
+    public UserOld Add(UserOld entity)
     {
         if (entity.CreatedOn == null || entity.CreatedOn == default(DateTime))
         {
@@ -24,29 +24,29 @@ public class SqlAuditDecorator: IUsersRepository
         return x;
     }
 
-    public void Delete(string entity)
+    public bool Delete(string entity)
     {
-        _inner.Delete(entity);
+        return _inner.Delete(entity);
     }
 
-    public void Update(UserOld entity)
+    public int Update(UserOld entity)
     {
-        _inner.Update(entity);
+       return _inner.Update(entity);
     }
 
-    public UserOld GetByToken(string token)
+    public UserOld findByToken(string token)
     {
-        return _inner.GetByToken(token);
+        return _inner.findByToken(token);
     }
 
-    public UserOld GetLoginUser(string email, string password)
+    public UserOld findLoginUser(string email, string password)
     {
-        return _inner.GetLoginUser(email, password);
+        return _inner.findLoginUser(email, password);
     }
 
 
-    public List<UserOld> GetUsersGeneric(Func<UserOld, bool> pred)
+    public List<UserOld> findUsersGeneric(Func<UserOld, bool> pred)
     {
-        return _inner.GetUsersGeneric(pred);
+        return _inner.findUsersGeneric(pred);
     }
 }

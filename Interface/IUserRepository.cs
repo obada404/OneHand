@@ -5,10 +5,10 @@ namespace OneHandTraining.Interface;
 
 public interface IUsersRepository
 {
-    public int Add(UserOld entity);
-    public void Delete(string entity);
-    public void Update(UserOld entity);
-    public UserOld GetByToken(string token);
-    public UserOld GetLoginUser(string email, string password);
-    public List<UserOld> GetUsersGeneric(Func<UserOld,bool> pred);  
+    public UserOld Add(UserOld entity);
+    public bool Delete(string entity);
+    public int Update(UserOld entity);
+    public UserOld findByToken(string token);
+    public UserOld findLoginUser(string email, string password);
+    public List<UserOld> findUsersGeneric(Func<UserOld,bool> pred);  
 }

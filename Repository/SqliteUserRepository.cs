@@ -13,20 +13,20 @@ public class SqliteUserRepository :IUsersRepository
         _context = context;
     }
     
-    public int Add(UserOld entity)
+    public UserOld Add(UserOld entity)
     {
 
         _context.UserOldDBs.Add(entity);
         _context.SaveChanges(); 
-        return entity.Id; 
+        return entity; 
     }
 
 
-    public void Delete(string entity)
+    public bool Delete(string entity)
     {
-        var u = _context.UserOldDBs.First(x=> x.Token == entity);
-        _context.UserOldDBs.Remove(u);
-        _context.SaveChanges();
+        var userOld = _context.UserOldDBs.First(x=> x.Token == entity);
+        _context.UserOldDBs.Remove(userOld);
+        return _context.SaveChanges()!=0;
     }
     
 
@@ -36,23 +36,30 @@ public class SqliteUserRepository :IUsersRepository
         _context.SaveChanges();
     }
 
-    public void Update(UserOld entity)
+    public int Update(UserOld entity)
     {
-        _context.UserOldDBs.Update(entity);
-        _context.SaveChanges();
+        var olduser = _context.UserOldDBs.Find(entity.Id);
+        if (olduser != null)
+        {
+            var ee= _context.Entry(olduser);
+            ee.CurrentValues.SetValues(entity);
+            _context.SaveChanges();
+            return 1;
+        }
+        return 0;
     }
 
-    public UserOld GetByToken(string token)
+    public UserOld findByToken(string token)
     {
         return _context.UserOldDBs.Single(x => x.Token == token);
     }
 
-    public UserOld GetLoginUser(string email, string password)
+    public UserOld findLoginUser(string email, string password)
     {
         return _context.UserOldDBs.First(x => x.Email == email && x.Password == password);
     }
 
-    public List<UserOld> GetUsersGeneric(Func<UserOld, bool> pred)
+    public List<UserOld> findUsersGeneric(Func<UserOld, bool> pred)
     {
         return _context.UserOldDBs.Where(pred).ToList();
     }

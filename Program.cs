@@ -1,38 +1,25 @@
-using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Mvc;
-using FluentValidation.AspNetCore;
 using System.Reflection;
-using System.Web.Http.ModelBinding;
-using System.Web.WebPages;
-using FluentValidation;
-using FluentValidation.Results;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using FluentValidation.AspNetCore;
 using Microsoft.EntityFrameworkCore;
 using OneHandTraining;
-using OneHandTraining.Decorator;
 using OneHandTraining.Interface;
 using OneHandTraining.Models;
-using OneHandTraining.Validation;
-using ValidationResult = System.ComponentModel.DataAnnotations.ValidationResult;
+using OneHandTraining.Repository;
+using OneHandTraining.Service;
 
 var builder = WebApplication.CreateBuilder(args);
-
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
 builder.Services.AddControllers();
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme).AddJwtBearer();
 builder.Services.AddAuthorization();
 builder.Services.AddDbContext<oneHandContext>(options => options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection"))); 
-//builder.Services.AddScoped<IValidator<UserRequest>, userValidator>();
-builder.Services.AddScoped<IUsersRepository, SqliteUserRepository>();
-builder.Services.AddScoped<IUserService, UserService>();
-builder.Services.AddScoped<IprofileService, profileService>();
-builder.Services.AddScoped<IarticaleService, articaleService>();
-builder.Services.AddScoped<IarticaleRepository, SqliteArticaleRepository>();
+builder.Services.AddAutoMapper(Assembly.GetExecutingAssembly());
+
+AddScopedFunction(builder);
+
 builder.Services.AddFluentValidation(fv =>
 {
-    fv.AutomaticValidationEnabled =false;
+    fv.AutomaticValidationEnabled = false;
     fv.ImplicitlyValidateChildProperties = false;
 
 });
@@ -43,8 +30,19 @@ app.Run("http://localhost:5500");
 
 
 
-public record tagseRequestEnv<T> ( T tags);
 
+
+void AddScopedFunction(WebApplicationBuilder webApplicationBuilder)
+{
+    webApplicationBuilder.Services.AddScoped<IUsersRepository, SqliteUserRepository>();
+    webApplicationBuilder.Services.AddScoped<IUserService, UserService>();
+    
+    webApplicationBuilder.Services.AddScoped<IprofileRepository, SqliteProfileRepository>();
+    webApplicationBuilder.Services.AddScoped<IprofileService, ProfileService>();
+    
+    webApplicationBuilder.Services.AddScoped<IArticleService, ArticleService>();
+    webApplicationBuilder.Services.AddScoped<IArticleRepository, SqliteArticleRepository>();
+}
 
 
 

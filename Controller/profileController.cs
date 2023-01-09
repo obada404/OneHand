@@ -1,7 +1,6 @@
 using System.Net;
 using AdventureWorks.Filter;
 using Microsoft.AspNetCore.Mvc;
-using OneHandTraining.model;
 using OneHandTraining.DTO;
 using OneHandTraining.Interface;
 
@@ -19,33 +18,31 @@ public class ProfileController:Controller
     [HttpGet]
     [TypeFilter(typeof(LogFilter))]
     [Route("/profiles/{username}")]
-    public ActionResult Getprofiles(String username)
+    public ActionResult FindProfiles(String username)
     {
 
         var profileQuery=_profileService.findProfileByAuthor(username);
         return new ObjectResult(profileQuery.Last()){StatusCode = (int)HttpStatusCode.OK};
     }
-
-    [HttpGet]
+    [HttpPost]
+    [TypeFilter(typeof(LogFilter))]
     [Route("/profiles/{username}/follow")]
-    public ActionResult FollowProfile(String username,[FromBody] emailUserRequest emailUserRequest)
+    public ActionResult FollowProfile(String username,[FromBody] UserRequestEnv<emailUserRequest>  emailUserRequest)
     {
-        var result = _profileService.FollowProfile(username, emailUserRequest.Email);
+        var result = _profileService.FollowProfile(username, emailUserRequest.User.Email);
         return new ObjectResult(result){StatusCode = (int)HttpStatusCode.OK};
     }
-
     [HttpDelete]
+    [TypeFilter(typeof(LogFilter))]
     [Route("/profiles/{username}/follow")]
-    public ActionResult unFollowProfile(String username,[FromBody] emailUserRequest emailUserRequest)
+    public ActionResult UnFollowProfile(String username,[FromBody] emailUserRequest emailUserRequest)
     {
         var result = _profileService.unFollowProfile(username,emailUserRequest.Email);
         return new ObjectResult(result){StatusCode = (int)HttpStatusCode.OK};
- 
     }
-
     [HttpGet]
     [Route("/tags")]
-    public ActionResult getTags(){
+    public ActionResult FindTags(){
         return new ObjectResult( new tagseRequestEnv<Array>(Repo.tags) ){StatusCode = (int)HttpStatusCode.OK};
     }
 }

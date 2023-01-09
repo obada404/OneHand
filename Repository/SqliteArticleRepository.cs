@@ -12,11 +12,12 @@ public class SqliteArticleRepository :IArticleRepository
     {
         _context = context;
     }
-    public  async Task<Article> add(Article curent)
+    public  async Task<Article> add(Article curent, int articleAuthorId)
     {
-        _context.Articles.Add(curent);
-        _context.SaveChanges();
-        return curent;
+        curent.author=(await _context.UserOldDBs.FindAsync(articleAuthorId))!;
+         _context.Articles.Add(curent);
+        await _context.SaveChangesAsync();
+        return  curent;
     }
 
     public List<Article> findByFavorite(string favorited)
@@ -50,17 +51,20 @@ public class SqliteArticleRepository :IArticleRepository
         return result.ToList();
     }
 
-    public List<Article> findArticlesFeed(string authorization)
+    public IEnumerable<Article> findArticlesFeed(string authorization)
     {
      var user =   _context.UserOldDBs.Where(x=>x.Token == authorization).First();
      if (user == null)
          return null;
-     
-     IEnumerable<Article> result  =
-         (from article in _context.Articles
-             where article.author.following.Equals(true)
-             select article).Take(5);
-     return result.ToList();
 
+    var result= _context.Articles.Where(x => x.author.followers.Contains(user));
+
+     return  result.AsEnumerable();
+
+    }
+
+    public List<Article> getAllArticles()
+    {
+        return _context.Articles.ToList();
     }
 }

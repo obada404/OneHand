@@ -13,7 +13,7 @@ public class SqlAuditDecorator: IUsersRepository
         _inner = inner;
     }
     
-    public UserOld Add(UserOld entity)
+    public Task<UserOld> Add(UserOld entity)
     {
         if (entity.CreatedOn == null || entity.CreatedOn == default(DateTime))
         {
@@ -29,17 +29,18 @@ public class SqlAuditDecorator: IUsersRepository
         return _inner.Delete(entity);
     }
 
-    public int Update(UserOld entity)
+    public UserOld Update(UserOld entity)
     {
        return _inner.Update(entity);
     }
 
-    public UserOld findByToken(string token)
+    public UserOld findByEmailAndId(string email, int Id)
     {
-        return _inner.findByToken(token);
+        throw new NotImplementedException();
     }
 
-    public UserOld findLoginUser(string email, string password)
+
+    public Task<UserOld> findLoginUser(string email, string password)
     {
         return _inner.findLoginUser(email, password);
     }

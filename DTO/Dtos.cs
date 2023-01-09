@@ -18,7 +18,7 @@ public class RootArticle
 
         public Article article { get; set; }
     }
-    public class allArticle
+public class allArticle
     {
         public allArticle( )
         {
@@ -37,27 +37,32 @@ public class RootArticle
             return true;
         }
     }
-    public record  ArticleRequestEnv<T> ( T article);
+public record  ArticleRequestEnv<T> ( T article);
 
 
-    public record ArticleRequest (string slug, string title, string description, string body, List<string> tagList, DateTime createdAt, DateTime updatedAt, bool favorited, int favoritesCount, UserOld author);
+public record ArticleRequest (string slug, string title,
+    string description, string body, List<string> tagList,
+    DateTime createdAt, DateTime updatedAt, bool favorited, 
+    int favoritesCount, int authorId);
 
 public record ProfileRequestEnv<T> ( T profile);
 
 
-public class Users
-{
-    public  UserOld user {get; }
-
-    public Users(UserOld user)
-    {
-        this.user = user;
-    }
-
- 
-}
-public record UserRequest (string Username, string Email, string Password);
+public record UserRegistrationRequest (string Username, 
+    string Email, string Password);
 public record loginUserRequest ( string Email, string Password);
 public record emailUserRequest ( string Email);
 
+public class UserRequest
+{
+    public int Id { get; set; }
+
+    public  string Username { get; set; }
+    public  string Email { get; set; }
+
+    public string? Bio{ get; set; }
+    public String? Token { set;get; }
+    public string? Image{ get; set; }
+
+};
 public record UserRequestEnv<T> ( T User);

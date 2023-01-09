@@ -1,27 +1,28 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
+using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
+using OneHandTraining;
 
 namespace AdventureWorks
 {
     public class JwtManager
     {
         private readonly string? _secretKey;
+        private readonly JwtOptions _jwtOptions;
 
-        public JwtManager(string? secretKey)
+        public JwtManager(IOptions<JwtOptions> options)
         {
-            _secretKey = secretKey;
+            _secretKey = options.Value.Key;
         }
 
-        public string GenerateJwt(string userId, string name, string email,String role)
+        public string GenerateJwt(string userId, string email)
         {
             var claims = new[]
             {
-                new Claim(JwtRegisteredClaimNames.Sid, userId),
-                new Claim(JwtRegisteredClaimNames.Name, name),
-                new Claim(JwtRegisteredClaimNames.Email, email),
-                new Claim(ClaimTypes.Role, role)
+                new Claim(JwtRegisteredClaimNames.Sid,userId),
+                new Claim(ClaimTypes.Email,email),
             };
 
             if (_secretKey != null)

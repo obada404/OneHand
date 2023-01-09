@@ -9,10 +9,10 @@ public class LogFilter : IActionFilter
 {
     private readonly ILogger _logger;
     private readonly JwtManager _jwtManager;
-    public LogFilter(ILogger<LogFilter> logger,IConfiguration config)
+    public LogFilter(ILogger<LogFilter> logger,JwtManager jwtManager)
     {
         _logger = logger;
-        _jwtManager = new JwtManager(config["Jwt:Key"]);
+        _jwtManager =jwtManager ;
     }
 
     public void OnActionExecuting(ActionExecutingContext context)
@@ -22,12 +22,12 @@ public class LogFilter : IActionFilter
         {
             context.Result =new ForbidResult();
         }
-        
-
-        var userEmail = principal?.FindFirst(JwtRegisteredClaimNames.Email);
+        var userEmail = principal?.FindFirst(ClaimTypes.Email);
         context.HttpContext.Request.Headers["email"] = userEmail?.Value;
-        var role = principal?.FindFirst(ClaimTypes.Role)?.Value;
-        context.HttpContext.Request.Headers["role"] = role;
+        var id = principal?.FindFirst(JwtRegisteredClaimNames.Sid);
+        context.HttpContext.Request.Headers["id"] = id?.Value;
+        var name = principal?.FindFirst(ClaimTypes.Name);
+        context.HttpContext.Request.Headers["name"] = name?.Value;
     }
 
     public void OnActionExecuted(ActionExecutedContext context)

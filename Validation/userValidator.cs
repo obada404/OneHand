@@ -5,7 +5,7 @@ using OneHandTraining.DTO;
 
 namespace OneHandTraining.Validation;
 
-public class userValidator : AbstractValidator<UserRequest>
+public class userValidator : AbstractValidator<UserRegistrationRequest>
 {
     public userValidator()
     {

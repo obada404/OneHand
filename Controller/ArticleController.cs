@@ -18,14 +18,13 @@ public class ArticleController :Controller
 
     [HttpPost]
     [Route("/articles")]
-    public async Task<ObjectResult> PostArticles([FromBody] ArticleRequestEnv<ArticleRequest> req){
-        var result = _articleValidator.Validate(req.article);
+    public async Task<ObjectResult> AddArticles([FromBody] ArticleRequestEnv<ArticleRequest> req){
+        var result = await _articleValidator.ValidateAsync(req.article);
         if ( !result.IsValid)
         {
             var errors = result.Errors.Select(x => new { errors = x.ErrorMessage });
             return new ObjectResult( errors ){StatusCode = (int)HttpStatusCode.BadRequest};
         }
-
         var root = await _articleService.addArticle(req.article);
         return new ObjectResult(root ){StatusCode = (int)HttpStatusCode.OK};
    
@@ -33,7 +32,7 @@ public class ArticleController :Controller
 
     [HttpGet]
     [Route("/articles")]
-    public ActionResult getaArticles(){
+    public ActionResult FindArticles(){
         if(! (string.IsNullOrEmpty(Request.Query["favorited"])))
         {
             var result = _articleService.findArticlesByFavorite((Request.Query["favorited"]));
@@ -52,7 +51,7 @@ public class ArticleController :Controller
             return new ObjectResult( result ){StatusCode = (int)HttpStatusCode.OK};
         }
         
-        return new ObjectResult( Repo.allArticle ){StatusCode = (int)HttpStatusCode.OK};
+        return new ObjectResult( _articleService.getAllArticles() ){StatusCode = (int)HttpStatusCode.OK};
     }
 
     [HttpGet]

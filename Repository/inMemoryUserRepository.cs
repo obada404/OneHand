@@ -6,11 +6,11 @@ namespace OneHandTraining.Repository;
 public class InMemoryUserRepository :IUsersRepository
 {
 
-    public UserOld Add(UserOld entity)
+    public async Task<UserOld> Add(UserOld entity)
     {
-        var userOld = new UserOld(entity.Username, entity.Email,entity.Password,"","asdsdasd",$"{Guid.NewGuid()}");
-        Repo.UserDb.Add(userOld);
-        return userOld;
+       // var userOld = new UserOld(entity.Username, entity.Email,entity.Password,"","asdsdasd",$"{Guid.NewGuid()}");
+        Repo.UserDb.Add(entity);
+        return entity;
     }
 
     public bool Delete(string entity)
@@ -19,7 +19,7 @@ public class InMemoryUserRepository :IUsersRepository
        return Repo.UserDb.Remove(userOld);
     }
 
-    public int Update(UserOld entity)
+    public UserOld Update(UserOld entity)
     {
 
        //var curentuser = Repo.UserDb.Where(x => x.Email == entity.Email).First();
@@ -29,11 +29,16 @@ public class InMemoryUserRepository :IUsersRepository
             if (cust.Email == entity.Email ) 
             {
                 cust.Email= entity.Email;
-                return 1;
+                return cust;
             }
         }
 
-        return 0;
+        return null;
+    }
+
+    public UserOld findByEmailAndId(string email, int Id)
+    {
+        throw new NotImplementedException();
     }
 
     public UserOld findByToken(string token)
@@ -47,7 +52,7 @@ public class InMemoryUserRepository :IUsersRepository
         return userQuery.Last();
     }
 
-    public UserOld findLoginUser(string email, string password)
+    public async Task<UserOld> findLoginUser(string email, string password)
     {
         IEnumerable<UserOld> userQuery =
             from user1 in Repo.UserDb

@@ -6,7 +6,7 @@ namespace OneHandTraining.Interface;
 
 public interface IprofileRepository                                                                  
 {
-    ProfileRequestEnv<Profile> FollowProfile(string username, string email);
-    ProfileRequestEnv<Profile> unFollowProfile(string username,string email);
+    UserOld? FollowProfile(string username, string email);
+    UserOld? unFollowProfile(string username, string email);
     List<UserOld> findProfileByAuthor(string username);
 }

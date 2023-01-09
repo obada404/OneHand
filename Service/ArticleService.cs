@@ -17,13 +17,13 @@ public class ArticleService : IArticleService
         _mapperArticle = mapperArticle;
     }
     
-     public async Task<ArticleRequestEnv<Article>> addArticle(ArticleRequest article)
+     public async Task<ArticleRequestEnv<ArticleRequest>> addArticle(ArticleRequest article)
      {
        
          var mapArticle = _mapperArticle.Map<ArticleRequest,Article>(article);
-         var addedArticle=   await _articleRepository.add(mapArticle);
-         ArticleRequestEnv<Article> root = new ArticleRequestEnv<Article>(addedArticle);
-         return root;
+         var addedArticle=   await _articleRepository.add(mapArticle,article.authorId);
+         
+         return new ArticleRequestEnv<ArticleRequest>(_mapperArticle.Map<Article,ArticleRequest>(addedArticle));
      }
       public List<Article> findArticlesByFavorite( String favorited)
       {
@@ -41,8 +41,15 @@ public class ArticleService : IArticleService
 
 
      }
-      public List<Article> findArticlesFeed(String authorization)
+      public List<ArticleRequest> findArticlesFeed(string authorization)
      {
-        return _articleRepository.findArticlesFeed(authorization);
+        var  result =_articleRepository.findArticlesFeed(authorization);
+       var maping= _mapperArticle.Map<IEnumerable<ArticleRequest>>(result);
+       return maping.ToList();
      }
+
+      public List<Article> getAllArticles()
+      {
+          return _articleRepository.getAllArticles();
+      }
 }

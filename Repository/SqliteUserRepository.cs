@@ -1,3 +1,5 @@
+using AdventureWorks;
+using Microsoft.EntityFrameworkCore;
 using OneHandTraining.Interface;
 using OneHandTraining.model;
 using OneHandTraining.Models;
@@ -13,12 +15,11 @@ public class SqliteUserRepository :IUsersRepository
         _context = context;
     }
     
-    public UserOld Add(UserOld entity)
+    public async Task<UserOld> Add(UserOld entity)
     {
-
-        _context.UserOldDBs.Add(entity);
-        _context.SaveChanges(); 
-        return entity; 
+        var  userOld = _context.UserOldDBs.Add(entity).Entity;
+        await _context.SaveChangesAsync();
+        return userOld; 
     }
 
 
@@ -36,27 +37,28 @@ public class SqliteUserRepository :IUsersRepository
         _context.SaveChanges();
     }
 
-    public int Update(UserOld entity)
+    public UserOld Update(UserOld entity)
     {
         var olduser = _context.UserOldDBs.Find(entity.Id);
         if (olduser != null)
         {
-            var ee= _context.Entry(olduser);
-            ee.CurrentValues.SetValues(entity);
-            _context.SaveChanges();
-            return 1;
+            olduser.Email = entity.Email;
+            olduser.Token = entity.Token;
+            _context.SaveChangesAsync();
+            return olduser;
         }
-        return 0;
+        return null ;
     }
 
-    public UserOld findByToken(string token)
+    public UserOld findByEmailAndId(string email,int Id)
     {
-        return _context.UserOldDBs.Single(x => x.Token == token);
+        return _context.UserOldDBs.Single(x => x.Email == email && x.Id == Id);
     }
 
-    public UserOld findLoginUser(string email, string password)
-    {
-        return _context.UserOldDBs.First(x => x.Email == email && x.Password == password);
+    public async Task<UserOld> findLoginUser(string email, string password)
+    {  //jwt to service 
+        var user= await _context.UserOldDBs.FirstAsync(x => x.Email == email && x.Password == password);
+        return user;
     }
 
     public List<UserOld> findUsersGeneric(Func<UserOld, bool> pred)

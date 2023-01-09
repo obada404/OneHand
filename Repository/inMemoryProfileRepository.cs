@@ -16,27 +16,29 @@ public class inMemoryProfileRepository:IprofileRepository
     
     
 
-    public ProfileRequestEnv<Profile> FollowProfile(string username, string email)
+    public UserOld? FollowProfile(string username, string email)
     {
         foreach( ProfileRequestEnv<Profile> requestEnv in Repo.profileDb)
         {
             if (requestEnv.profile.username.Equals(username) == true )
             {
                 requestEnv.profile.following = true;
-                return requestEnv;
+                //return requestEnv;
+                return null;
             }
         }
         return null;
     }
 
-    public ProfileRequestEnv<Profile> unFollowProfile(string username, string email)
+    public UserOld? unFollowProfile(string username, string email)
     {
         foreach( ProfileRequestEnv<Profile> profileRequest in Repo.profileDb)
         {
             if (profileRequest.profile.username.Equals(username) == true )
             {
                 profileRequest.profile.following = false;
-                return profileRequest;
+              //  return profileRequest;
+              return null;
             }
         }
         return null;

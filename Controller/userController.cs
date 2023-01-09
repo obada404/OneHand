@@ -1,5 +1,4 @@
 using System.Net;
-using AdventureWorks;
 using AdventureWorks.Filter;
 using Microsoft.AspNetCore.Mvc;
 using OneHandTraining.Validation;
@@ -13,59 +12,45 @@ public class UserController :Controller
     
     private readonly IUserService _userService;
     private readonly userValidator _userValidator;
-    private readonly JwtManager _jwtManager;
-    public UserController(IConfiguration config,IUserService userService,userValidator userValidator)
+    public UserController(IUserService userService,userValidator userValidator)
     {
         _userService = userService;
         _userValidator = userValidator;
-        _jwtManager = new JwtManager(config["Jwt:Key"]);
     }
     [HttpPost]
     [Route("/users")] 
-    public ActionResult userSingIn([FromBody] UserRequestEnv<UserRequest> req)
+    public async Task<JsonResult> UserSingIn([FromBody] UserRequestEnv<UserRegistrationRequest> req)
     {
-        var result = _userValidator.Validate(req.User);
-     if ( !result.IsValid)
+        var validationResult = await _userValidator.ValidateAsync(req.User);
+     if ( !validationResult.IsValid)
      {
-         var errors = result.Errors.Select(x => new { errors = x.ErrorMessage });
+         var errors = validationResult.Errors.Select(x => new { errors = x.ErrorMessage });
          return new JsonResult(errors);
      }
-        var resp =  _userService.Adduser(req.User);
-        //Json version 
-        return new JsonResult(new UserRequestEnv<UserRequest>(resp)){StatusCode = (int) HttpStatusCode.OK};
-    
-        //generic version
-        //return new ObjectResult(new UserRequestEnv<UserOld>(resp)){StatusCode = (int)HttpStatusCode.Accepted};
-    }
-    [HttpPost]
-    [Route("/login")] 
-    public ActionResult userLogin([FromBody] UserRequestEnv<loginUserRequest> req)
-    {
-        var userOld = _userService.findUserByEmail(req.User);
-        return new ObjectResult(userOld){StatusCode = (int)HttpStatusCode.OK};
+        var result = await _userService.AdduserAsync(req.User);
+
+        return new JsonResult(new UserRequestEnv<UserRequest>(result)) { StatusCode = (int)HttpStatusCode.OK };
     }
     [HttpPost]
     [Route("/users/login")] 
-    public ActionResult usersLogin([FromBody] UserRequestEnv<loginUserRequest> req)
-    {
-        var userOld = _userService.findUserByEmail(req.User);
-        var jwt = _jwtManager.GenerateJwt(userOld.Id+"", userOld.Username!, userOld.Email!,"Admin");
-        userOld.Token = jwt;
-        return new ObjectResult(userOld) { StatusCode = (int)HttpStatusCode.OK };
+    public async Task<ActionResult> UsersLogin([FromBody] UserRequestEnv<loginUserRequest> req)
+    {        
+        var userOld = await _userService.findUserByEmail(req.User);
+        return new ObjectResult(new UserRequestEnv<UserRequest>(userOld)) { StatusCode = (int)HttpStatusCode.OK };
     }
     [HttpGet]
     [Route("/user")] 
     [TypeFilter(typeof(LogFilter))]
-    public ActionResult GetUser()
+    public ActionResult GetCurrentUser()
     {
-        var userQuery= _userService.findUserByToken(Request.Headers.Authorization);
+        var userQuery= _userService.findUserByEmailAndId(Request.Headers["email"]!,int.Parse(Request.Headers["id"]!));
         return new ObjectResult(userQuery){StatusCode = (int)HttpStatusCode.OK};
     }
     [HttpPut]
     [Route("/user")]
     [TypeFilter(typeof(LogFilter))]
-    public ActionResult updateUser( [FromBody] UserRequestEnv<emailUserRequest> req)
+    public ActionResult UpdateUser( [FromBody] UserRequestEnv<emailUserRequest> req)
     {
-        return new ObjectResult( _userService.updateEmail(Request.Headers.Authorization, req.User)){StatusCode = (int)HttpStatusCode.OK};
+        return new ObjectResult( _userService.updateEmail( req.User,int.Parse(Request.Headers["id"]!))){StatusCode = (int)HttpStatusCode.OK};
     }
 }

@@ -5,7 +5,7 @@ namespace OneHandTraining.Repository;
 
 public class InMemoryArticleRepository :IArticleRepository
 {
-    public async Task<Article> add(Article curent)
+    public async Task<Article> add(Article curent, int articleAuthorId)
     {
         Repo.allArticle.addToArticle( curent);
         return curent;
@@ -30,7 +30,12 @@ public class InMemoryArticleRepository :IArticleRepository
         return result.ToList();    
     }
 
-    public List<Article> findArticlesFeed(string authorization)
+    public IEnumerable<Article> findArticlesFeed(string authorization)
+    {
+        throw new NotImplementedException();
+    }
+
+    public List<Article> getAllArticles()
     {
         throw new NotImplementedException();
     }

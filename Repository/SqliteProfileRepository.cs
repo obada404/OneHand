@@ -9,28 +9,34 @@ namespace OneHandTraining.Repository;
 
 public class SqliteProfileRepository:IprofileRepository
 {
-    private readonly IMapper _mapper;
     private readonly oneHandContext _context;
     public SqliteProfileRepository(oneHandContext context,IMapper mapper)
     {
         _context = context;
-        _mapper = mapper;
     }
-    public ProfileRequestEnv<Profile> FollowProfile(string username, string email)
+    public UserOld? FollowProfile(string username, string email)
+    {
+        var user = _context.UserOldDBs.First(x => x.Username == username);
+        var follwingUser = _context.UserOldDBs.First(x => x.Email == email);
+        if (user != null && follwingUser !=null)
+        {
+            user.followers.Add(follwingUser);
+            follwingUser.following.Add(user);
+            
+        }
+        _context.SaveChanges();
+        return user;
+    }
+    public UserOld? unFollowProfile(string username, string email)
     {
         var user = _context.UserOldDBs.First(x => x.Username == email);
         var follwingUser = _context.UserOldDBs.First(x => x.Username == username);
-        if (user.followers != null) user.followers.Add(follwingUser);
+        if (user != null )
+        {
+            user.followers.Remove(follwingUser);
+        }
         _context.SaveChanges();
-        return new ProfileRequestEnv<Profile>(_mapper.Map<UserOld, Profile>(user));
-    }
-    public ProfileRequestEnv<Profile> unFollowProfile(string username,string email)
-    {
-        var user = _context.UserOldDBs.First(x => x.Username == email);
-        var follwingUser = _context.UserOldDBs.First(x => x.Username == username);
-        if (user.followers != null) user.followers.Remove(follwingUser);
-        _context.SaveChanges();
-        return new ProfileRequestEnv<Profile>(_mapper.Map<UserOld, Profile>(user));
+        return (user);
     }
     public List<UserOld> findProfileByAuthor(string username)
     {

@@ -5,8 +5,8 @@ namespace OneHandTraining.Interface;
 
 public interface IUserService
 {
-    UserRequest Adduser(UserRequest user);
-    UserOld findUserByEmail(loginUserRequest user);
-    UserOld findUserByToken( String authorization);
-    UserOld updateEmail(string authorization, emailUserRequest user);
+    Task<UserRequest> AdduserAsync(UserRegistrationRequest userRegistration);
+    Task<UserRequest> findUserByEmail(loginUserRequest user);
+    UserRequest findUserByEmailAndId(string email, int Id);
+    UserRequest updateEmail(emailUserRequest user, int id);
 }
